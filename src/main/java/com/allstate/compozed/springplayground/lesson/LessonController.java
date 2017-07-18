@@ -13,6 +13,7 @@ public class LessonController {
     private final LessonRepository repository;
 
     LessonController(final LessonRepository repository) {
+
         this.repository = repository;
     }
 
