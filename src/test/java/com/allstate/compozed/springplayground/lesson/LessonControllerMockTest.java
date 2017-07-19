@@ -144,7 +144,6 @@ public class LessonControllerMockTest {
 
         this.mockMvc.perform(request)
                 .andExpect(status().isOk())
-                .andDo(print())
                 .andExpect(jsonPath("$.id", is(lesson.getId())))
                 .andExpect(jsonPath("$.title", is(lesson.getTitle())));
     }

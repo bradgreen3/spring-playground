@@ -12,15 +12,18 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
 import javax.transaction.Transactional;
 import java.util.Arrays;
 
 import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -74,5 +77,31 @@ public class LessonControllerRealDatabaseTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(lesson.getId().intValue())))
                 .andExpect(jsonPath("$.title", is("Algebra 1")));
+    }
+
+    @Transactional
+    @Rollback
+    @Test
+    public void invalidReadReturns404() throws Exception {
+        mockMvc.perform(get("/lessons/{id}", 4))
+                .andExpect(status().isNotFound());
+    }
+
+    @Transactional
+    @Rollback
+    @Test
+    public void updateEditsExistingRecord() throws Exception {
+
+        // Setup
+        final LessonModel lesson = new LessonModel();
+        lesson.setTitle("Algebra 1");
+        repository.save(lesson);
+
+        mockMvc.perform(put("/lessons/{id}", lesson.getId())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"title\": \"Algebra 2\"}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", is(lesson.getId().intValue())))
+                .andExpect(jsonPath("$.title", is("Algebra 2")));
     }
 }

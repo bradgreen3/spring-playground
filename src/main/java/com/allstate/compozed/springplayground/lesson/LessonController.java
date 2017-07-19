@@ -35,7 +35,7 @@ public class LessonController {
     ResponseEntity<LessonModel> read(@PathVariable final long id) throws Exception {
         if(null == repository.findOne(id)) {
 //            throw new NestedServletException("Lesson not found");
-            return new ResponseEntity(HttpStatus.NOT_FOUND);
+                return new ResponseEntity(HttpStatus.NOT_FOUND);
         }
 
         return new ResponseEntity<>(repository.findOne(id), HttpStatus.OK);
