@@ -22,6 +22,7 @@ import javax.transaction.Transactional;
 import java.util.Arrays;
 
 import static org.hamcrest.Matchers.is;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -103,5 +104,20 @@ public class LessonControllerRealDatabaseTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(lesson.getId().intValue())))
                 .andExpect(jsonPath("$.title", is("Algebra 2")));
+    }
+
+    @Transactional
+    @Rollback
+    @Test
+    public void deleteDeletesExistingRecord() throws Exception {
+
+        // Setup
+        final LessonModel lesson = new LessonModel();
+        lesson.setTitle("Algebra 1");
+        repository.save(lesson);
+
+        mockMvc.perform(delete("/lessons/{id}", lesson.getId()))
+                .andExpect(status().isOk());
+
     }
 }
