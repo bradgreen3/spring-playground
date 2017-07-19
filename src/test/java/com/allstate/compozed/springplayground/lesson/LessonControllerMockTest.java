@@ -8,6 +8,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
+import org.springframework.web.util.NestedServletException;
 
 import java.util.Collections;
 import java.util.Random;
@@ -15,6 +16,7 @@ import java.util.Random;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -94,7 +96,18 @@ public class LessonControllerMockTest {
                 .andExpect(jsonPath("$.id", is(lesson.getId())))
                 .andExpect(jsonPath("$.title", is(lesson.getTitle())));
 
-        verify(repository).findOne(id);
+        verify(repository, times(2)).findOne(id);
+    }
+
+    @Test
+    public void testReadThrowsExceptionIfLessonNotFound() throws Exception {
+
+        MockHttpServletRequestBuilder request = get("/lessons/3")
+                .contentType(MediaType.APPLICATION_JSON);
+
+        this.mockMvc.perform(request)
+                .andExpect(status().isNotFound());
+
     }
 
     @Test
