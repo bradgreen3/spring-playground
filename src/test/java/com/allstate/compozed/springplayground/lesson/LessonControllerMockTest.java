@@ -50,6 +50,7 @@ public class LessonControllerMockTest {
         this.mockMvc.perform(request)
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.title", is("Mock me another one!")));
+
         verify(repository).save(any(LessonModel.class));
     }
 
@@ -70,6 +71,8 @@ public class LessonControllerMockTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id", is(lesson.getId())))
                 .andExpect(jsonPath("$[0].title", is(lesson.getTitle())));
+
+        verify(repository).findAll();
 
     }
 
