@@ -17,6 +17,7 @@ import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -76,5 +77,46 @@ public class LessonControllerMockTest {
 
     }
 
+    @Test
+    public void testRead() throws Exception {
 
+        Long id = new Random().nextLong();
+        LessonModel lesson = new LessonModel();
+        lesson.setTitle("test");
+        lesson.setId(id);
+
+        when(repository.findOne(id)).thenReturn(lesson);
+
+        MockHttpServletRequestBuilder request = get("/lessons/{id}", id)
+                .contentType(MediaType.APPLICATION_JSON);
+
+        this.mockMvc.perform(request)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", is(lesson.getId())))
+                .andExpect(jsonPath("$.title", is(lesson.getTitle())));
+
+        verify(repository).findOne(id);
+    }
+
+    @Test
+    public void testDelete() throws Exception {
+
+        Long id = new Random().nextLong();
+        LessonModel lesson = new LessonModel();
+        lesson.setTitle("test");
+        lesson.setId(id);
+
+//        when(repository.delete(id)).thenReturn(lesson);
+
+        MockHttpServletRequestBuilder request = delete("/lessons/{id}", id)
+                .contentType(MediaType.APPLICATION_JSON);
+
+        this.mockMvc.perform(request)
+                .andExpect(status().isOk());
+
+        verify(repository).delete(id);
+    }
+
+    @Test
+    public
 }

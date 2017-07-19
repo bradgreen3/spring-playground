@@ -26,4 +26,10 @@ public class LessonController {
     Iterable<LessonModel> list() {
         return repository.findAll();
     }
+
+    @GetMapping("/{id}")
+    LessonModel read(@PathVariable final long id) { return repository.findOne(id); }
+
+    @DeleteMapping("/{id}")
+    void delete(@PathVariable final long id) { repository.delete(id); }
 }
