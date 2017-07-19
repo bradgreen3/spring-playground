@@ -32,4 +32,12 @@ public class LessonController {
 
     @DeleteMapping("/{id}")
     void delete(@PathVariable final long id) { repository.delete(id); }
+
+    @PutMapping("/{id}")
+    LessonModel update(@RequestBody final LessonModel lesson, @PathVariable final long id) {
+        LessonModel foundLesson = repository.findOne(id);
+            foundLesson.setTitle(lesson.getTitle());
+
+            return repository.save(foundLesson);
+    }
 }

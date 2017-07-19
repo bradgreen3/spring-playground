@@ -17,9 +17,8 @@ import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -106,8 +105,6 @@ public class LessonControllerMockTest {
         lesson.setTitle("test");
         lesson.setId(id);
 
-//        when(repository.delete(id)).thenReturn(lesson);
-
         MockHttpServletRequestBuilder request = delete("/lessons/{id}", id)
                 .contentType(MediaType.APPLICATION_JSON);
 
@@ -118,5 +115,24 @@ public class LessonControllerMockTest {
     }
 
     @Test
-    public
+    public void TestUpdate() throws Exception {
+
+        Long id = new Random().nextLong();
+        LessonModel lesson = new LessonModel();
+        lesson.setTitle("Mock me another one!");
+        lesson.setId(id);
+
+        when(repository.save(lesson)).then(returnsFirstArg());
+        when(repository.findOne(id)).thenReturn(lesson);
+
+        MockHttpServletRequestBuilder request = put("/lessons/{id}", id)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"title\": \"Mock me another one!\"}");
+
+        this.mockMvc.perform(request)
+                .andExpect(status().isOk())
+                .andDo(print())
+                .andExpect(jsonPath("$.id", is(lesson.getId())))
+                .andExpect(jsonPath("$.title", is(lesson.getTitle())));
+    }
 }
